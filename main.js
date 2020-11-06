@@ -17,7 +17,7 @@ var copyright;
 // SQL
 const SQL_BOOK_LIST = 'select book_id, title from book2018 where title like ? limit ? offset ?' // order by title asc'
 const SQL_BOOK_INFO = 'select * from book2018 where book_id = ?'
-const SQL_COUNT_BOOK = 'select * from book2018 where title like ?'
+const SQL_COUNT_BOOK = 'select title from book2018 where title like ?'
 
 // create an instance of the application
 const app = express()
@@ -78,7 +78,7 @@ app.post('/search', express.urlencoded({extended: true}),
     const selectedButton = (req.body.selectedButton)
     //console.info(selectedButton)
     OFFSET = parseInt(req.body.offset) || 0
-    console.info("current offset: ", OFFSET)
+    //console.info("current offset: ", OFFSET)
 
     let conn, bookResults, bookCount;
 
@@ -91,7 +91,7 @@ app.post('/search', express.urlencoded({extended: true}),
         //console.info("bookresults: ", bookResults)
         let countResults = await conn.query(SQL_COUNT_BOOK, [`${selectedButton}%`])
         bookCount = countResults[0].length
-        console.info("bookCount: ", bookCount)
+        //console.info("bookCount: ", bookCount)
 
     }catch(e){
         console.error("error: ",e)
@@ -166,23 +166,33 @@ app.get('/book/:bookId', async (req,resp)=> {
 app.get('/review/:title', async(req,resp)=> {
 
     const inTitle = req.params.title
-    console.info("pass in title: ", inTitle)
+    //console.info("pass in title: ", inTitle)
 
     const url = withQuery(NYT_URL, {
         title: inTitle,
         "api-key": API_KEY
     })
     
-    const result = await fetch(url)
-    const reviewData = (await result.json()).results[0]
-    console.info("reviewData :", reviewData)
-    
-    resp.status(200)
-    resp.type('text/html')
-    resp.render('review', {
-        reviewData: reviewData
-    })
+    try {
+        const result = await fetch(url)
+        const reviewData = (await result.json()).results[0]
+        //console.info("reviewData :", reviewData)
 
+        resp.status(200)
+        resp.type('text/html')
+        resp.render('review', {
+            reviewData: reviewData,
+            hasReview: 1
+        })
+    }
+    catch(e) {
+        console.error('ERROR: ', e)
+        resp.status(500)
+        resp.type('text/html')
+        resp.render('review', {
+            hasReview: false
+        })
+    }
 })
 
 app.get('/', (req,resp)=> {

@@ -1,16 +1,20 @@
 <div class="container">
     <div class="row justify-content-around">
-        <div class="col-4">
-            <div class="row pb-2">
+        <div class="col-md-4">
+            <div class="row pb-2 ">
                 <img class="img-fluid img-thumbnail rounded" src="{{ book.image_url }}">
             </div>
             <div class="row">
                 <p><code>Pages:</code><i>{{book.pages}}</i></p>
+            </div>
+            <div class="row">
                 <p><code>Rating: </code> <i>{{ book.rating }}</i></p>
+            </div>
+            <div class="row">
                 <p><code>Genre:</code><i>{{book.genres}}</i></p>
             </div>
         </div>
-        <div class="col">
+        <div class="col-md-8">
             <h3>{{ book.title }}</h3>
             <p>by {{book.authors}}</p>
             <p>
@@ -21,9 +25,9 @@
             </p>
         </div>
     </div>
-    <div class="row">
+    <div class="row ml-2 pb-2 justify-content-between align-items-start">
         <form action="/" method="get">
-            <button type="submit">HOME</button>
+            <button class="btn-sm float-left" type="submit">HOME</button>
         </form>
     </div>
 </div>

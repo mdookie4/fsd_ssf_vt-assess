@@ -1,9 +1,20 @@
-<div class="container">
-    <div class="row head">{{reviewData.book_title}}</div>
-    <div class="row">by {{reviewData.book_author}}</div>
-    <div class="row">Reviewer: {{reviewData.byline}}</div>
-    <div class="row">Date: {{reviewData.publication_dt}}</div>
-    <div class="row">{{reviewData.summary}}</div>
-    <div class="row"><a href="{{reviewData.url}}" target="_blank">Full Review</a></div>
-    <div class="row">Copyright</div>
-</div>
+{{#if hasReview}}
+    <div class="container">
+        <div class="row head">{{reviewData.book_title}}</div>
+        <div class="row">by {{reviewData.book_author}}</div>
+        <div class="row">Reviewer: {{reviewData.byline}}</div>
+        <div class="row">Date: {{reviewData.publication_dt}}</div>
+        <div class="row">{{reviewData.summary}}</div>
+        <div class="row"><a href="{{reviewData.url}}" target="_blank">Full Review</a></div>
+        <div class="row">Copyright</div>
+    </div>
+{{else}}
+    <div class="container">
+        <div class="row"><h2>No reviews found!</h2></div>
+        <div class="row ml-2 pb-2 justify-content-between align-items-start">
+            <form action="/" method="get">
+                <button class="btn-sm float-left" type="submit">HOME</button>
+            </form>
+        </div>
+    </div>
+{{/if}}
