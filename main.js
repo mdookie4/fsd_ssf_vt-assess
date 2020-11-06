@@ -4,6 +4,7 @@ const handlebars = require('express-handlebars')
 const mysql = require('mysql2/promise')
 const fetch = require('node-fetch')
 const withQuery = require('with-query').default
+const morgan = require('morgan')
 
 // configurables
 const PORT = parseInt(process.argv[2]) || parseInt(process.env.PORT) || 3000
@@ -11,6 +12,7 @@ const API_KEY = process.env.API_KEY || "";
 const NYT_URL = 'https://api.nytimes.com/svc/books/v3/reviews.json'
 const LIMIT = 10
 var OFFSET = 0
+var copyright;
 
 // SQL
 const SQL_BOOK_LIST = 'select book_id, title from book2018 where title like ? limit ? offset ?'
@@ -23,11 +25,14 @@ const app = express()
 app.engine('hbs', handlebars({ defaultLayout: 'default.hbs' }))
 app.set('view engine', 'hbs')
 
+//configure morgan
+app.use(morgan('combined'))
+
 // create connection pool
 const pool = mysql.createPool({
 	host: process.env.DB_HOST || 'localhost',
 	port: parseInt(process.env.DB_PORT) || 3306,
-	database: 'goodreads',
+	database: process.env.DB_NAME, //'goodreads',
 	user: process.env.DB_USER,
 	password: process.env.DB_PASSWORD,
     connectionLimit: 4,
@@ -57,6 +62,15 @@ const startApp = async (app, pool) => {
     }
 }
 
+//log all http requests
+app.use(
+    (req, resp, next) => {
+        console.info(`${new Date()}: ${req.method} ${req.originalUrl}`)
+        next()
+    }
+)
+
+//Search book by letter or number
 app.post('/search', express.urlencoded({extended: true}),
     async(req,resp)=> {
     //console.info(req.body) 
@@ -96,18 +110,45 @@ app.post('/search', express.urlencoded({extended: true}),
     })
 })
 
+//Get detailed info about book from database
 app.get('/book/:bookId', async (req,resp)=> {
     const bookid = req.params.bookId
     let conn;
-    console.info("bookid :", bookid)
+    //console.info("bookid :", bookid)
 
 	try {
         conn = await pool.getConnection()
         const [result,_] = await conn.query(SQL_BOOK_INFO, [ `${bookid}` ])
-        console.info("book info: ", result)
-		resp.status(200)
-		resp.type('text/html')
-		resp.render('bookdetail', { book: result[0]})//, hasBook: !!result[0].title })
+        //console.info("json info: ", result)
+        //console.info("html info: ", result[0])
+        resp.status(200)
+        resp.format(
+            {
+                'text/html': ()=>{
+                    resp.render('bookdetail', { book: result[0]})//, hasBook: !!result[0].title })
+                },
+                'application/json': ()=> {
+                    resp.json(
+                        { 
+                            bookId: result[0].book_id,
+                            title: result[0].title,
+                            authors: result[0].authors,
+                            summary: result[0].description,
+                            pages: result[0].pages,
+                            rating: result[0].rating,
+                            ratingCount: result[0].rating_count,
+                            genre: result[0].genres
+                        }
+                    )
+                },
+                'default': ()=> {
+                    resp.status(406)
+                    resp.type('text/plain')
+                    resp.send(`Not supported: ${req.get("Accept")}`)
+                }
+            }
+        )
+		
 	} catch(e) {
 		console.error('ERROR: ', e)
 		resp.status(500)
@@ -115,6 +156,7 @@ app.get('/book/:bookId', async (req,resp)=> {
 	}
 })
 
+//Get review info on book from NYTimes
 app.get('/review/:title', async(req,resp)=> {
 
     const inTitle = req.params.title
@@ -126,9 +168,14 @@ app.get('/review/:title', async(req,resp)=> {
     })
     
     const result = await fetch(url)
-    const reviewData = await result.json()
-
+    const reviewData = (await result.json()).results[0]
     console.info("reviewData :", reviewData)
+    
+    resp.status(200)
+    resp.type('text/html')
+    resp.render('review', {
+        reviewData: reviewData
+    })
 
 })
 
@@ -138,6 +185,5 @@ app.get('/', (req,resp)=> {
     resp.render('index')
 })
 
-
-
+//start the app
 startApp(app, pool)
