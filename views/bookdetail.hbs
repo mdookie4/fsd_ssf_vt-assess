@@ -1,16 +1,14 @@
 <div class="container">
-    <div class="row">
-        <div class="col-4 d-flex justify-content-center">
-            <img class="img-fluid img-thumbnail rounded" src="{{ book.image_url }}">
-            <p>
-                <code>Pages:</code><i>{{book.pages}}</i>
-            </p>
-            <p>
-                <code>Rating: </code> <i>{{ book.rating }}</i>
-            </p>
-            <p>
-                <code>Genre:</code><i>{{book.genres}}</i>
-            </p>
+    <div class="row justify-content-around">
+        <div class="col-4">
+            <div class="row pb-2">
+                <img class="img-fluid img-thumbnail rounded" src="{{ book.image_url }}">
+            </div>
+            <div class="row">
+                <p><code>Pages:</code><i>{{book.pages}}</i></p>
+                <p><code>Rating: </code> <i>{{ book.rating }}</i></p>
+                <p><code>Genre:</code><i>{{book.genres}}</i></p>
+            </div>
         </div>
         <div class="col">
             <h3>{{ book.title }}</h3>

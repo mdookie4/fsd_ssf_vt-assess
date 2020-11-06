@@ -15,8 +15,9 @@ var OFFSET = 0
 var copyright;
 
 // SQL
-const SQL_BOOK_LIST = 'select book_id, title from book2018 where title like ? limit ? offset ?'
+const SQL_BOOK_LIST = 'select book_id, title from book2018 where title like ? limit ? offset ?' // order by title asc'
 const SQL_BOOK_INFO = 'select * from book2018 where book_id = ?'
+const SQL_COUNT_BOOK = 'select * from book2018 where title like ?'
 
 // create an instance of the application
 const app = express()
@@ -77,9 +78,9 @@ app.post('/search', express.urlencoded({extended: true}),
     const selectedButton = (req.body.selectedButton)
     //console.info(selectedButton)
     OFFSET = parseInt(req.body.offset) || 0
-    //console.info("current offset: ", OFFSET)
+    console.info("current offset: ", OFFSET)
 
-    let conn, bookResults;
+    let conn, bookResults, bookCount;
 
     //start SQL process
     try {
@@ -88,6 +89,9 @@ app.post('/search', express.urlencoded({extended: true}),
         //console.info(results)
         bookResults = results[0]
         //console.info("bookresults: ", bookResults)
+        let countResults = await conn.query(SQL_COUNT_BOOK, [`${selectedButton}%`])
+        bookCount = countResults[0].length
+        console.info("bookCount: ", bookCount)
 
     }catch(e){
         console.error("error: ",e)
@@ -106,7 +110,9 @@ app.post('/search', express.urlencoded({extended: true}),
         letter: selectedButton,
         hasResult: bookResults.length > 0,
         prevOffset: Math.max(0, OFFSET - LIMIT),
-        nextOffset: OFFSET + LIMIT
+        nextOffset: OFFSET + LIMIT,
+        startOfList: OFFSET <= 0,
+        endOfList: OFFSET + LIMIT > bookCount
     })
 })
 

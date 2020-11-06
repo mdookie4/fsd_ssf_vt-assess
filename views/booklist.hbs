@@ -1,31 +1,57 @@
-{{#if hasResult}}
-
-    <div class="head">Letter {{letter}}</div>
-    {{#each booklist}}    
-        <div class="row justify-content-center">
-            <a href="/book/{{this.book_id}}">{{this.title}}</a>
+<div class="container">
+    {{#if hasResult}}
+        <div class="row justify-content-md-start pb-2 pl-4"><h2>Letter {{letter}}</h2></div>
+        {{#each booklist}}    
+            <div class="row justify-content-center pb-2">
+                <a href="/book/{{this.book_id}}">{{this.title}}</a>
+            </div>
+        {{/each}}
+        <div class="row justify-content-between pb-2">
+            <div class="w-100"></div>
+            {{#if startOfList}}
+                <div class="col flex-column align-items-start">
+                    <form method="POST" action="/search">
+                        <input type="hidden" name="offset" value={{ prevOffset }}>
+                        <button class="btn-sm float-left" type="submit" name="selectedButton" value="{{letter}}" hidden>Previous</button>
+                    </form>
+                </div>
+            {{else}}
+                <div class="col flex-column align-items-start">
+                    <form method="POST" action="/search">
+                        <input type="hidden" name="offset" value={{ prevOffset }}>
+                        <button class="btn-sm float-left" type="submit" name="selectedButton" value="{{letter}}">Previous</button>
+                    </form>
+                </div>
+            {{/if}}
+            {{#if endOfList}}
+                <div class="col flex-column align-items-end">
+                    <form method="POST" action="/search">
+                        <input type="hidden" name="offset" value={{ nextOffset }}>
+                        <button class="btn-sm float-right" type="submit" name="selectedButton" value="{{letter}}" hidden>Next</button>
+                    </form>
+                </div>
+            {{else}}
+                <div class="col flex-column align-items-end">
+                    <form method="POST" action="/search">
+                        <input type="hidden" name="offset" value={{ nextOffset }}>
+                        <button class="btn-sm float-right" type="submit" name="selectedButton" value="{{letter}}">Next</button>
+                    </form>
+                </div>
+            {{/if}}
         </div>
-    {{/each}}
-    <div class="row justify-content-between">
-        <div class="col-4">
+
+    {{else}}
+        <h2>There are no books with the letter {{letter}}</h2>
+        <div class="row flex-column align-items-start">
             <form method="POST" action="/search">
                 <input type="hidden" name="offset" value={{ prevOffset }}>
-                <button type="submit" name="selectedButton" value="{{letter}}">Previous</button>
+                <button class="btn-sm float-left" type="submit" name="selectedButton" value="{{letter}}">Previous</button>
             </form>
         </div>
-        <div class="col-4">
-            <form method="POST" action="/search">
-                <input type="hidden" name="offset" value={{ nextOffset }}>
-                <button type="submit" name="selectedButton" value="{{letter}}">Next</button>
-            </form>
-        </div>
+    {{/if}}
+    <div class="row ml-2 pb-2 justify-content-between align-items-start">
+        <form action="/" method="get">
+            <button class="btn-sm float-left" type="submit">HOME</button>
+        </form>
     </div>
-
-{{else}}
-    <h2>There are no books with the letter {{letter}}</h2>
-{{/if}}
-<div class="row">
-    <form action="/" method="get">
-        <button type="submit">HOME</button>
-    </form>
 </div>
