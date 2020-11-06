@@ -175,23 +175,26 @@ app.get('/review/:title', async(req,resp)=> {
     
     try {
         const result = await fetch(url)
-        const reviewData = (await result.json()).results[0]
-        //console.info("reviewData :", reviewData)
+        const allData = await result.json()
+        //console.info ("all Data: ", allData)
+        const reviewData = allData.results[0]
+        const numResult = allData.num_results
+        //console.info("numResult :", numResult)
+        const copyrightString = allData.copyright
+        //console.info("copyright: ", copyrightString)
 
         resp.status(200)
         resp.type('text/html')
         resp.render('review', {
             reviewData: reviewData,
-            hasReview: 1
+            hasReview: numResult > 0,
+            copyright: copyrightString
         })
     }
     catch(e) {
         console.error('ERROR: ', e)
         resp.status(500)
-        resp.type('text/html')
-        resp.render('review', {
-            hasReview: false
-        })
+        resp.send('<h2>Error</h2>' + e)
     }
 })
 
