@@ -1,0 +1,26 @@
+{{#if hasResult}}
+
+    <div class="head">Letter {{letter}}</div>
+    {{#each booklist}}    
+        <div class="row justify-content-center">
+            <a href="/book/{{this.book_id}}">{{this.title}}</a>
+        </div>
+    {{/each}}
+    <div class="row justify-content-between">
+        <div class="col-4">
+            <form method="POST" action="/search">
+                <input type="hidden" name="offset" value={{ prevOffset }}>
+                <button type="submit" name="selectedButton" value="{{letter}}">Previous</button>
+            </form>
+        </div>
+        <div class="col-4">
+            <form method="POST" action="/search">
+                <input type="hidden" name="offset" value={{ nextOffset }}>
+                <button type="submit" name="selectedButton" value="{{letter}}">Next</button>
+            </form>
+        </div>
+    </div>
+
+{{else}}
+    <h2>There are no books with the letter {{letter}}</h2>
+{{/if}}

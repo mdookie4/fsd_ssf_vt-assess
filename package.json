@@ -1,0 +1,26 @@
+{
+  "name": "fsd_ssf_vt-assess",
+  "version": "1.0.0",
+  "description": "FSD SSF VT assessment",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://mdookie4@github.com/mdookie4/fsd_ssf_vt-assess.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mdookie4/fsd_ssf_vt-assess/issues"
+  },
+  "homepage": "https://github.com/mdookie4/fsd_ssf_vt-assess#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-handlebars": "^5.2.0",
+    "mysql2": "^2.2.5",
+    "node-fetch": "^2.6.1",
+    "with-query": "^1.3.0"
+  }
+}
